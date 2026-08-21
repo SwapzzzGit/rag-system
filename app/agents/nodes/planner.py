@@ -17,7 +17,7 @@ def planner_node(state: agentState):
     for msg in state["messages"][:-1]:
         role = "User" if msg["role"] == "user" else "Assistent"
         history += f"{role} : {msg['content']}"
-    user_message = state["messages"][:-1]["content"] if state["messages"] else ""
+    user_message = state["messages"][-1]["content"] if state["messages"] else ""
 
     prompt = f"""
     You are an intelligent Assistant Planner. 

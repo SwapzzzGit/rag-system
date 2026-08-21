@@ -41,7 +41,7 @@ def get_graph_imge():
         return {"Error": f"Could not generate graph image {e}"}
 
 
-@app.get("/query")
+@app.post("/query")
 def query(request: QueryRequest):
     """
     Executes Langgraph RAF flow with memory using POST Request.

@@ -21,7 +21,7 @@ def generate_node(state: agentState):
         role = "User" if msg["role"] == "user" else ""
         history_str += f"role : {role} {msg['content']}\n"
 
-    user_msg = state["messages"][:-1]["content"] if state["messages"] else ""
+    user_msg = state["messages"][-1]["content"] if state["messages"] else ""
 
     if query == "CONVERSATIONAL":
         logfire.info("Generating Conversational response using memory")
@@ -35,6 +35,19 @@ def generate_node(state: agentState):
         LATEST MESSAGE:
         {user_msg}
         """
+        with logfire.span("💬 LLM Conversational Response"):
+            try:
+                content = llm.invoke(prompt).content
+                logfire.info("✅ Conversational response generated.")
+                return {
+                    "final_answer": content,
+                    "status": "Response generated.",
+                    "plan": state["plan"],
+                    "messages": [{"role": "assistant", "content": content}],
+                }
+            except Exception as e:
+                logfire.error(f"LLM Conversational Generation failed: {e}")
+                raise e
     else:
         logfire.info("Generating Technical RAG response")
         max_context_chars = 25000
